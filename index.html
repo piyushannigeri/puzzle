@@ -1,8 +1,316 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANSWER BOX</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Poppins:wght@400;700&display=swap');
+        
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --error: #d63031;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background-color: rgba(45, 52, 54, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-family: 'Roboto Mono', monospace;
+            color: var(--accent);
+            margin-top: 0;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .binary-icon {
+            font-size: 4rem;
+            margin: 1rem 0;
+            color: var(--secondary);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
+            background-color: var(--dark);
+            color: var(--light);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            resize: vertical;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(253, 121, 168, 0.3);
+        }
+        
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            background-color: #e84393;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            min-height: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            font-family: 'Roboto Mono', monospace;
+            word-wrap: break-word;
+        }
+        
+        .error {
+            color: var(--accent);
+            font-weight: bold;
+            animation: shake 0.5s;
+        }
+        
+        .laugh-container {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            opacity: 0;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes laugh {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .binary-pattern {
+            position: absolute;
+            font-family: 'Roboto Mono', monospace;
+            color: rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
 <body>
-  <h1>Puzzle (stage1)</h1>
-  <p>Stage 1: Solve 2(x + 3)^2 - 5 = 45</p>
-  <p>Download the Python script: <a href="puzzle.py">puzzle.py</a></p>
+    <div class="container">
+        <!-- Binary pattern background -->
+        <div class="binary-pattern" style="top: 20px; left: 20px;">01001000 01101001</div>
+        <div class="binary-pattern" style="bottom: 40px; right: 30px;">01110100 01101000 01100101 01110010 01100101</div>
+        
+        <div class="binary-icon">CrypticCoading</div>
+        <h1>3301</h1>
+        <p>Enter your answer:</p>
+        
+        <textarea id="binaryInput" placeholder="Example: 01001000 01100101 01101100 01101100 01101111"></textarea>
+        
+        <div>
+            <button id="convertBtn">Convert to Text</button>
+            <button id="clearBtn">Clear All</button>
+        </div>
+        
+        <div class="result" id="result">Your text will appear here...</div>
+        
+        <div class="laugh-container" id="laughContainer">
+            <div class="emoji">😂</div>
+            <h2 class="error">That's not proper answer, silly!</h2>
+            <p>All the best baby! Try again with 1s and 0s.</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Made with ❤️ and 01000010 01101001 01101110 01100001 01110010 01111001
+    </div>
+    
+    <script>
+        document.getElementById('convertBtn').addEventListener('click', convertBinaryToText);
+        document.getElementById('clearBtn').addEventListener('click', clearAll);
+        
+        function convertBinaryToText() {
+            const binaryInput = document.getElementById('binaryInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const laughContainer = document.getElementById('laughContainer');
+            
+            // Hide laugh container initially
+            laughContainer.style.display = 'none';
+            resultDiv.classList.remove('error');
+            
+            if (!binaryInput) {
+                resultDiv.textContent = "Please enter some binary code!";
+                resultDiv.classList.add('error');
+                return;
+            }
+            
+            // Check if input contains anything other than 0, 1, or space
+            if (/[^01\s]/.test(binaryInput)) {
+                showLaugh();
+                return;
+            }
+            
+            // Split binary string into array of binary 'words'
+            const binaryArray = binaryInput.split(' ');
+            let textResult = '';
+            
+            for (let i = 0; i < binaryArray.length; i++) {
+                const binary = binaryArray[i];
+                
+                // Check if each binary 'word' is 8 bits
+                if (binary && binary.length !== 8) {
+                    showLaugh();
+                    return;
+                }
+                
+                if (binary) {
+                    // Convert binary to decimal then to character
+                    const decimal = parseInt(binary, 2);
+                    textResult += String.fromCharCode(decimal);
+                } else {
+                    // Add space if binary 'word' is empty (from multiple spaces)
+                    textResult += ' ';
+                }
+            }
+            
+            resultDiv.textContent = textResult || "No valid binary found!";
+            
+            if (textResult) {
+                createConfetti();
+            }
+        }
+        
+        function showLaugh() {
+            const resultDiv = document.getElementById('result');
+            const laughContainer = document.getElementById('laughContainer');
+            
+            resultDiv.textContent = "Invalid binary detected!";
+            resultDiv.classList.add('error');
+            
+            laughContainer.style.display = 'block';
+            
+            // Animate the laugh emoji
+            const emoji = document.querySelector('.emoji');
+            emoji.style.animation = 'laugh 0.5s infinite';
+            
+            setTimeout(() => {
+                emoji.style.animation = '';
+            }, 2000);
+        }
+        
+        function clearAll() {
+            document.getElementById('binaryInput').value = '';
+            document.getElementById('result').textContent = 'Your text will appear here...';
+            document.getElementById('result').classList.remove('error');
+            document.getElementById('laughContainer').style.display = 'none';
+        }
+        
+        function createConfetti() {
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random position
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                
+                // Random color
+                const colors = ['#fd79a8', '#a29bfe', '#74b9ff', '#55efc4', '#ffeaa7'];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                // Random shape
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                container.appendChild(confetti);
+                
+                // Animate
+                const animationDuration = Math.random() * 3 + 2;
+                
+                confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100%', opacity: 0 }
+                ], {
+                    duration: animationDuration * 1000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, animationDuration * 1000);
+            }
+        }
+    </script>
 </body>
 </html>
