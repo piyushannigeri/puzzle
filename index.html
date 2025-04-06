@@ -3,78 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Puzzle | Beyond Good and Evil</title>
+    <title>THE CIPHER | Beyond Good and Evil</title>
     <style>
         body {
-            font-family: 'Palatino', serif;
-            background: #f9f4e8;
-            color: #3a3226;
+            font-family: 'Times New Roman', serif;
+            background-color: #0a0a0a;
+            color: #e0d5c8;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            color: #c33b2b;
+            font-size: 2.5rem;
+            margin: 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .container {
             max-width: 700px;
             margin: 0 auto;
             padding: 20px;
-            text-align: center;
         }
-        h1 {
-            color: #8b0000;
-            border-bottom: 2px dashed #8b0000;
-        }
+        
         .audio-container {
-            margin: 30px 0;
+            margin: 40px 0;
         }
+        
         button {
-            background: #8b0000;
-            color: #fff;
+            background-color: #8b0000;
+            color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             margin: 10px;
-            cursor: pointer;
             font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
+        
         button:hover {
-            background: #6b0000;
+            background-color: #6b0000;
+            transform: scale(1.05);
         }
-        .hint {
+        
+        #hintText {
             font-style: italic;
-            margin: 20px 0;
-            color: #666;
+            margin: 30px 0;
+            display: none;
         }
+        
         #spectrogram {
             width: 100%;
+            height: 200px;
             margin: 20px auto;
-            border: 1px solid #ddd;
             display: none;
+            background-color: #121212;
+        }
+        
+        #passwordSection {
+            margin: 30px 0;
+            display: none;
+        }
+        
+        #passwordInput {
+            padding: 10px;
+            font-size: 16px;
+            width: 250px;
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #3a3226;
+        }
+        
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 25px;
+        }
+        
+        #successSection {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        #finalLink {
+            color: #c33b2b;
+            font-size: 1.2rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        #bgMusicToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>The Philosopher's Cipher</h1>
-    <p>Listen closely. The truth hides where the ear fails...</p>
-    
-    <div class="audio-container">
-        <audio id="hiddenAudio" controls>
-            <source src="https://github.com/piyushannigeri/puzzle/blob/main/audio.wav?raw=true" type="audio/wav">
-            Your browser does not support the audio element.
-        </audio>
+    <div class="container">
+        <h1>THE PHILOSOPHER'S CIPHER</h1>
+        
+        <div class="audio-container">
+            <audio id="hiddenAudio" controls>
+                <source src="https://github.com/piyushannigeri/puzzle/blob/main/audio.wav?raw=true" type="audio/wav">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        
+        <button onclick="document.getElementById('hiddenAudio').play()">PLAY</button>
+        <button onclick="downloadAudio()">DOWNLOAD</button>
+        <button onclick="showHint()">REVEAL HINT</button>
+        
+        <p id="hintText" class="hint">
+            <strong>Hint:</strong> May be you should try decrypting this to get the book.. and then follow the riddle as said. Please go to the last line after decrypting the audio, and finding what to be done.
+        </p>
+        
+        <canvas id="spectrogram"></canvas>
+
+        <div id="passwordSection">
+            <h3>Enter the Code</h3>
+            <input type="text" id="passwordInput" placeholder="Enter the code">
+            <button id="submitPassword" onclick="checkPassword()">SUBMIT</button>
+            <p id="result"></p>
+        </div>
+
+        <div id="successSection">
+            <a id="finalLink" href="#">PROCEED</a>
+        </div>
     </div>
     
-    <button onclick="document.getElementById('hiddenAudio').play()">Play</button>
-    <button onclick="downloadAudio()">Download</button>
-    <button onclick="showHint()">Reveal Hint</button>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
     
-    <p id="hintText" class="hint" style="display:none;">
-        <strong>Hint:</strong> Open this audio in <a href="https://www.audacityteam.org/" target="_blank">Audacity</a> or 
-        <a href="https://www.sonicvisualiser.org/" target="_blank">Sonic Visualizer</a>. 
-        Look for patterns beyond human hearing.
-    </p>
-    
-    <canvas id="spectrogram"></canvas>
+    <div id="bgMusicToggle" onclick="toggleMusic()">🎵</div>
     
     <script>
+        // Background music toggle
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.volume = 0.3;
+        
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                document.getElementById('bgMusicToggle').textContent = '🔊';
+            } else {
+                bgMusic.pause();
+                document.getElementById('bgMusicToggle').textContent = '🎵';
+            }
+        }
+        
         // Download audio
         function downloadAudio() {
             const link = document.createElement('a');
             link.href = 'https://github.com/piyushannigeri/puzzle/blob/main/audio.wav?raw=true';
-            link.download = 'nietzsche_puzzle.wav';
+            link.download = 'puzzle.wav';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -83,10 +178,10 @@
         // Show hint
         function showHint() {
             document.getElementById('hintText').style.display = 'block';
+            document.getElementById('passwordSection').style.display = 'block';
         }
         
-        // Optional: Basic spectrogram visualization (WebAudio API)
-        // Note: For a full spectrogram, use libraries like Wavesurfer.js
+        // Spectrogram visualization
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const analyser = audioCtx.createAnalyser();
         const canvas = document.getElementById('spectrogram');
@@ -110,18 +205,34 @@
             function draw() {
                 requestAnimationFrame(draw);
                 analyser.getByteFrequencyData(dataArray);
-                ctx.fillStyle = 'rgb(200, 200, 200)';
+                ctx.fillStyle = 'rgb(20, 20, 20)';
                 ctx.fillRect(0, 0, WIDTH, HEIGHT);
                 const barWidth = (WIDTH / bufferLength) * 2.5;
                 let x = 0;
                 for (let i = 0; i < bufferLength; i++) {
                     const barHeight = dataArray[i] / 2;
-                    ctx.fillStyle = `rgb(100, ${barHeight + 100}, 50)`;
+                    ctx.fillStyle = `rgb(150, ${barHeight + 50}, 50)`;
                     ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
                     x += barWidth + 1;
                 }
             }
             draw();
+        }
+
+        // Password Checker (case-insensitive)
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value.trim().toUpperCase();
+            const resultElement = document.getElementById('result');
+            
+            if (password === "OTTMBOFSOT") {
+                resultElement.textContent = "Correct!";
+                resultElement.style.color = "#4CAF50";
+                document.getElementById('successSection').style.display = 'block';
+                document.getElementById('finalLink').href = "https://piyushannigeri.github.io/puzzle/" + password;
+            } else {
+                resultElement.textContent = "Incorrect";
+                resultElement.style.color = "#c33b2b";
+            }
         }
     </script>
 </body>
